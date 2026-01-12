@@ -1,17 +1,23 @@
 import { BlurView } from 'expo-blur';
 import { useRouter } from "expo-router";
+import { collection, getDocs, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, ImageBackground, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import logo from "../../assets/images/dinetimelogo.png";
 import banner from "../../assets/images/homeBanner.png";
-import { restaurants } from "../../store/restaurants";
+import { db } from '../config/firebaseConfig';
 
-const home = () => {
+
+export default function Home() {
   const router = useRouter();
+
+  const [restaurant, setRestaurant] = useState([])
 
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
+    onPress={()=>router.push(`/restaurant/${item.name}`)}
       className="bg-[#5f5f5f] w-72 rounded-lg p-4 mx-2 shadow-md overflow-hidden"
     >
       <Image
@@ -43,17 +49,31 @@ const home = () => {
     </TouchableOpacity>
   );
 
+  // Firestore se data kaise lekr aana h , wo hm yha krenge
+  const getRestaurants = async () => {
+    const q = query(collection(db, "restaurants"))
+    const res = await getDocs(q);
+
+    res.forEach((item) => {
+      setRestaurant((prev) => [...prev, item.data()])
+    })
+  }
+
+  useEffect(() => {
+    getRestaurants()
+  }, [])
+
   return (
-    <SafeAreaView 
-    style={[{ backgroundColor: "#2b2b2b"},
-    Platform.OS=="android"&&{paddingBottom: 10},
-    Platform.OS=="ios"&&{paddingBottom: 20},
-    ]}>
+    <SafeAreaView
+      style={[{ backgroundColor: "#2b2b2b" },
+      Platform.OS == "android" && { paddingBottom: 10 },
+      Platform.OS == "ios" && { paddingBottom: 20 },
+      ]}>
       <View className="flex items-center ">
         <View className="bg-[#5f5f5f] w-11/12 rounded-lg shadow-lg justify-between items-center flex flex-row p-2">
           <View className="flex flex-row">
             <Text className={`text-base h-10 
-              pt-[${Platform.OS === "ios" ? "pt-[8px]": "pt-1"}] align-middle text-white `}>{" "}
+              pt-[${Platform.OS === "ios" ? "pt-[8px]" : "pt-1"}] align-middle text-white `}>{" "}
               Welcome to {""}</Text>
             <Image resizeMode="cover" className={"w-20 h-11"} source={logo} />
           </View>
@@ -80,9 +100,9 @@ const home = () => {
           </Text>
         </View>
         {
-          restaurants.length > 0 ? (
+          restaurant.length > 0 ? (
             <FlatList
-              data={restaurants}
+              data={restaurant}
               renderItem={renderItem}
               horizontal
               contentContainerStyle={{ padding: 16 }} showHorizontalScrollIndicator={false} scrollEnabled={true}
@@ -97,9 +117,9 @@ const home = () => {
           </Text>
         </View>
         {
-          restaurants.length > 0 ? (
+          restaurant.length > 0 ? (
             <FlatList
-              data={restaurants}
+              data={restaurant}
               renderItem={renderItem}
               horizontal
               contentContainerStyle={{ padding: 16 }} showHorizontalScrollIndicator={false} scrollEnabled={true}
@@ -116,4 +136,3 @@ const home = () => {
   )
 }
 
-export default home

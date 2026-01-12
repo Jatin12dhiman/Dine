@@ -1,5 +1,5 @@
 import { collection, doc, setDoc } from "firebase/firestore";
-import { slots } from "../store/restaurants";
+import { slots } from "../../store/restaurants";
 import { db } from "./firebaseConfig";
 
 const restaurantData = slots;
