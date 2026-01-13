@@ -4,6 +4,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, Linking, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DatePickerComponent from "../components/restaurant/DatePickerComponent";
 import { db } from '../config/firebaseConfig';
 
 
@@ -15,6 +16,7 @@ export default function Restaurant() {
     const [carouselData, setCarouselData] = useState({})
     const [slotsData, setSlotsData] = useState({})
     const [currentIndex, setCurrentIndex] = useState(0)
+    const [date, setDate] = useState(new Date())
 
     const handleNextImage = () => {
         const carouselLength = carouselData[0]?.images.length;
@@ -68,27 +70,27 @@ export default function Restaurant() {
                     <Ionicons onPress={handlePrevImage} name="arrow-back" size={24} color="white" />
                 </View>
 
-                <View style={{position:"absolute", dispaly:"flex" , justifyContent:"center" , alignItems:"center", flexDirection:"row",left:"50%", transform:[{translateX:"-50%" }], zIndex:10 , bottom:15}}>
+                <View style={{ position: "absolute", dispaly: "flex", justifyContent: "center", alignItems: "center", flexDirection: "row", left: "50%", transform: [{ translateX: "-50%" }], zIndex: 10, bottom: 15 }}>
                     {
-                    carouselData[0]?.images.map((_,i)=>{
-                        return(
-                            <View key={i} className={`bg-white h-2 w-2 ${i==currentIndex && "h-3 w-3"} mx-1 p-1 rounded-full`} />
-                        )
-                    })
+                        carouselData[0]?.images.map((_, i) => {
+                            return (
+                                <View key={i} className={`bg-white h-2 w-2 ${i == currentIndex && "h-3 w-3"} mx-1 p-1 rounded-full`} />
+                            )
+                        })
                     }
-                    
+
 
                 </View>
-                    <Image source={{ uri: item }}
-                        style={{
-                            top: "5%",
-                            opacity: 0.5, backgroundColor: "black",
-                            marginRight: 15,
-                            marginLeft: 15,
-                            borderRadius: 25,
-                        }}
-                        className="h-64" />
-                
+                <Image source={{ uri: item }}
+                    style={{
+                        top: "5%",
+                        opacity: 0.5, backgroundColor: "black",
+                        marginRight: 15,
+                        marginLeft: 15,
+                        borderRadius: 25,
+                    }}
+                    className="h-64" />
+
             </View>
         )
     }
@@ -146,7 +148,7 @@ export default function Restaurant() {
         const supported = await Linking.canOpenURL(url);
         if (supported) {
             await Linking.openURL(url);
-        }else{
+        } else {
             console.log("Don't know how to open URL", url)
         }
     }
@@ -178,31 +180,34 @@ export default function Restaurant() {
                     />
                 </View>
                 <View className="flex-1 flex-row mt-2 p-2 ">
-                        <Ionicons 
-                         name="location-sharp"
+                    <Ionicons
+                        name="location-sharp"
                         size={24}
                         color="#f49b33" />
-                        <Text className="max-w-[75%] text-white">
-                    {restaurantData?.address} | {" "}
+                    <Text className="max-w-[75%] text-white">
+                        {restaurantData?.address} | {" "}
                         <Text onPress={handleLocation}
-                        className=" underline flex items-center text-[#f49b33] italic  mt-1 font-semibold"
+                            className=" underline flex items-center text-[#f49b33] italic  mt-1 font-semibold"
                         >
                             Get Direction
-                            </Text>
                         </Text>
+                    </Text>
                 </View>
                 <View className="flex-1 flex-row mt-2 p-2 ">
-                        <Ionicons 
+                    <Ionicons
                         name="time"
                         size={20}
                         color="#f49b33" />
-                        <Text className="max-w-[75%] text-white mx-2 font-semibold">
-                    {restaurantData?.opening}-
-                    {restaurantData?.closing}
-                       
-                        </Text>
+                    <Text className="max-w-[75%] text-white mx-2 font-semibold">
+                        {restaurantData?.opening}-
+                        {restaurantData?.closing}
+
+                    </Text>
                 </View>
-                
+                <View>
+                    <DatePickerComponent date={date} setDate={setDate} />
+                </View>
+
             </ScrollView>
         </SafeAreaView>
     )
