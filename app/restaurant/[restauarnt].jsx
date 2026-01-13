@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useLocalSearchParams } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, Platform, ScrollView, Text, View } from 'react-native';
+import { Dimensions, FlatList, Image, Linking, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { db } from '../config/firebaseConfig';
 
@@ -67,7 +67,18 @@ export default function Restaurant() {
                     }}>
                     <Ionicons onPress={handlePrevImage} name="arrow-back" size={24} color="white" />
                 </View>
-                <View>
+
+                <View style={{position:"absolute", dispaly:"flex" , justifyContent:"center" , alignItems:"center", flexDirection:"row",left:"50%", transform:[{translateX:"-50%" }], zIndex:10 , bottom:15}}>
+                    {
+                    carouselData[0]?.images.map((_,i)=>{
+                        return(
+                            <View key={i} className={`bg-white h-2 w-2 ${i==currentIndex && "h-3 w-3"} mx-1 p-1 rounded-full`} />
+                        )
+                    })
+                    }
+                    
+
+                </View>
                     <Image source={{ uri: item }}
                         style={{
                             top: "5%",
@@ -77,7 +88,7 @@ export default function Restaurant() {
                             borderRadius: 25,
                         }}
                         className="h-64" />
-                </View>
+                
             </View>
         )
     }
@@ -129,6 +140,16 @@ export default function Restaurant() {
             console.log("Error fetching restaurant data: ", error)
         }
     }
+
+    const handleLocation = async () => {
+        const url = "https://maps.app.goo.gl/TtSmNr394bVp9J8n8";
+        const supported = await Linking.canOpenURL(url);
+        if (supported) {
+            await Linking.openURL(url);
+        }else{
+            console.log("Don't know how to open URL", url)
+        }
+    }
     useEffect(() => {
         getRestaurantData()
     }, [])
@@ -156,6 +177,32 @@ export default function Restaurant() {
                         style={{ borderRadius: 25 }}
                     />
                 </View>
+                <View className="flex-1 flex-row mt-2 p-2 ">
+                        <Ionicons 
+                         name="location-sharp"
+                        size={24}
+                        color="#f49b33" />
+                        <Text className="max-w-[75%] text-white">
+                    {restaurantData?.address} | {" "}
+                        <Text onPress={handleLocation}
+                        className=" underline flex items-center text-[#f49b33] italic  mt-1 font-semibold"
+                        >
+                            Get Direction
+                            </Text>
+                        </Text>
+                </View>
+                <View className="flex-1 flex-row mt-2 p-2 ">
+                        <Ionicons 
+                        name="time"
+                        size={20}
+                        color="#f49b33" />
+                        <Text className="max-w-[75%] text-white mx-2 font-semibold">
+                    {restaurantData?.opening}-
+                    {restaurantData?.closing}
+                       
+                        </Text>
+                </View>
+                
             </ScrollView>
         </SafeAreaView>
     )
