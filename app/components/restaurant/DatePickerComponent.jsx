@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, Platform } from "react-native";
 import React, { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
+// date and setDate are props coming from [restaurants] and they are destructuring here.
 const DatePickerComponent = ({ date, setDate }) => {
   const [show, setShow] = useState(false);
 
@@ -13,7 +14,7 @@ const DatePickerComponent = ({ date, setDate }) => {
     setShow(true);
   };
   return (
-    <View className="flex flex-row">
+    <View className="flex flex-row p-4">
       <TouchableOpacity
         onPress={handlePress}
         className={` rounded-lg text-white text-base ${

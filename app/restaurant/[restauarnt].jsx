@@ -204,10 +204,19 @@ export default function Restaurant() {
 
                     </Text>
                 </View>
-                <View>
+                <View className="flex-1 flex-row m-2 p-2 justify-end text-white">
+                    <View className="flex-1 flex-row">
+                        <Ionicons
+                            name="calendar"
+                            size={20}
+                            color="#f49b33" />
+                        <Text className="text-white mx-2">
+                            Select booking date
+                        </Text>
+                    </View>
                     <DatePickerComponent date={date} setDate={setDate} />
                 </View>
-
+                
             </ScrollView>
         </SafeAreaView>
     )
