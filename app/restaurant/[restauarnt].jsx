@@ -6,6 +6,7 @@ import { Dimensions, FlatList, Image, Linking, Platform, ScrollView, Text, View 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DatePickerComponent from "../components/restaurant/DatePickerComponent";
 import { db } from '../config/firebaseConfig';
+import GuestPickerComponent from "../components/restaurant/GuestPickerComponent";
 
 
 export default function Restaurant() {
@@ -17,6 +18,8 @@ export default function Restaurant() {
     const [slotsData, setSlotsData] = useState({})
     const [currentIndex, setCurrentIndex] = useState(0)
     const [date, setDate] = useState(new Date())
+    const [selectedNumber, setSelectedNumber] = useState(2)
+
 
     const handleNextImage = () => {
         const carouselLength = carouselData[0]?.images.length;
@@ -204,19 +207,38 @@ export default function Restaurant() {
 
                     </Text>
                 </View>
-                <View className="flex-1 flex-row m-2 p-2 justify-end text-white">
-                    <View className="flex-1 flex-row">
-                        <Ionicons
-                            name="calendar"
-                            size={20}
-                            color="#f49b33" />
-                        <Text className="text-white mx-2">
-                            Select booking date
-                        </Text>
+
+
+                <View className="flex-1 border m-2 p-2 border-[#f49b33] rounded-lg">
+                   <View className="flex-1 flex-row m-2 p-2 justify-between items-center text-white">
+                        <View className="flex-row items-center">
+                            <Ionicons
+                                name="calendar"
+                                size={20}
+                                color="#f49b33" />
+                            <Text className="text-white mx-2 font-semibold">
+                                Select booking date
+                            </Text>
+                        </View>
+                        <DatePickerComponent date={date} setDate={setDate} />
                     </View>
-                    <DatePickerComponent date={date} setDate={setDate} />
+
+                    <View className="flex-1 flex-row bg-[#474747] rounded-lg m-2 p-2 justify-between items-center text-white">
+                        <View className="flex-row items-center">
+                            <Ionicons
+                                name="people"
+                                size={20}
+                                color="#f49b33" />
+                            <Text className="text-white mx-2 font-semibold">
+                                Select number of guests
+                            </Text>
+                        </View>
+                        <GuestPickerComponent
+                            selectedNumber={selectedNumber}
+                            setSelectedNumber={setSelectedNumber}
+                        />
+                    </View>
                 </View>
-                
             </ScrollView>
         </SafeAreaView>
     )
