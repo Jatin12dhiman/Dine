@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { Image, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Image, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from "../config/firebaseConfig";
 
@@ -13,15 +14,47 @@ import validationSchema from "../utils/authSchema";
 
 const Signup = () => {
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [checkingAuth, setCheckingAuth] = useState(true);
+
+    // Check if already signed in
+    useEffect(() => {
+        if (auth.currentUser) {
+            // Show a brief message and redirect
+            setTimeout(() => {
+                router.replace("/(tabs)/home");
+            }, 1500);
+        } else {
+            setCheckingAuth(false);
+        }
+    }, []);
+
     const handleSignup = async (values) => {
+        setLoading(true);
         try {
             await createUserWithEmailAndPassword(auth, values.email, values.password);
             router.replace("/(tabs)/home");
         } catch (error) {
             console.log("Signup Error:", error.message);
             alert("Signup Failed: " + error.message);
+        } finally {
+            setLoading(false);
         }
     }
+
+    // Show "Already signed in" message
+    if (checkingAuth && auth.currentUser) {
+        return (
+            <SafeAreaView className="flex-1 bg-[#2b2b2b] justify-center items-center">
+                <StatusBar barStyle={"light-content"} backgroundColor={"#2b2b2b"} />
+                <Image source={logo} style={{ width: 200, height: 100 }} />
+                <Text className="text-white text-lg mt-4">Already signed in!</Text>
+                <Text className="text-[#f49b33] text-base mt-2">Redirecting...</Text>
+                <ActivityIndicator size="large" color="#f49b33" className="mt-4" />
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView className={`bg-[#2b2b2b]`}>
             <StatusBar barStyle={"light-content"} backgroundColor={"#2b2b2b"} />
@@ -50,6 +83,7 @@ const Signup = () => {
                                             onChangeText={handleChange("email")}
                                             value={values.email}
                                             onBlur={handleBlur("email")}
+                                            editable={!loading}
                                         />
 
                                         {touched.email && errors.email && <Text className="text-red-500 mb-2">{errors.email}</Text>}
@@ -63,15 +97,24 @@ const Signup = () => {
                                             onChangeText={handleChange("password")}
                                             value={values.password}
                                             onBlur={handleBlur("password")}
+                                            editable={!loading}
                                         />
 
                                         {touched.password && errors.password && <Text className="text-red-500 mb-2">{errors.password}</Text>}
                                     </View>
                                     <TouchableOpacity
                                         onPress={handleSubmit}
-                                        className="p-2 my-2 bg-[#f49b33] rounded-lg mt-10"
+                                        disabled={loading}
+                                        className={`p-2 my-2 rounded-lg mt-10 flex-row justify-center items-center ${loading ? 'bg-gray-500' : 'bg-[#f49b33]'}`}
                                     >
-                                        <Text className="text-lg font-semibold text-center">Sign up</Text>
+                                        {loading ? (
+                                            <>
+                                                <ActivityIndicator size="small" color="white" />
+                                                <Text className="text-lg font-semibold text-center ml-2 text-white">Processing...</Text>
+                                            </>
+                                        ) : (
+                                            <Text className="text-lg font-semibold text-center">Sign up</Text>
+                                        )}
                                     </TouchableOpacity>
                                 </>
                             )}
@@ -81,6 +124,7 @@ const Signup = () => {
                             <TouchableOpacity
                                 className="flex flex-row justify-center items-center mt-5 p-2 items-center "
                                 onPress={() => router.push("/signin")}
+                                disabled={loading}
                             >
                                 <Text className="text-white font-semibold">Already a User? </Text>
                                 <Text className="text-base font-semibold underline text-[#f49b33]">
@@ -95,6 +139,7 @@ const Signup = () => {
                             <TouchableOpacity
                                 className="flex flex-row justify-center items-center mb-5 p-2 items-center "
                                 onPress={() => router.push("/home")}
+                                disabled={loading}
                             >
                                 <Text className="text-white font-semibold">Be a  </Text>
                                 <Text className="text-base font-semibold underline text-[#f49b33]">
@@ -115,4 +160,4 @@ const Signup = () => {
     )
 }
 
-export default Signup;  
+export default Signup;

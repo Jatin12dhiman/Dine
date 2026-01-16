@@ -180,9 +180,16 @@ export default function Restaurant() {
                     carouselSnapshot = await getDocs(qID);
                 }
 
+                if (carouselSnapshot.empty) {
+                    console.log("Carousel not found by ID. Trying Leading Slash Path...");
+                    // 4. Try Leading Slash Path (e.g., "/restaurants/restaurant_10")
+                    const qSlashPath = query(collection(db, "carousel"), where("res_id", "==", "/" + doc.ref.path));
+                    carouselSnapshot = await getDocs(qSlashPath);
+                }
+
                 const carouselImages = [];
                 if (carouselSnapshot.empty) {
-                    console.log("No matching carousel found (checked Ref, Path, and ID) for:", doc.id)
+                    console.log("No matching carousel found for:", doc.id)
                 } else {
                     console.log("Carousel FOUND. Size:", carouselSnapshot.size);
                     carouselSnapshot.forEach((carouselDoc) => {
@@ -211,9 +218,16 @@ export default function Restaurant() {
                     slotsSnapshot = await getDocs(qIDSlots);
                 }
 
+                if (slotsSnapshot.empty) {
+                    console.log("Slots not found by ID. Trying Leading Slash Path...");
+                    // 4. Try Leading Slash Path (e.g., "/restaurants/restaurant_10")
+                    const qSlashPathSlots = query(collection(db, "slots"), where("ref_id", "==", "/" + doc.ref.path));
+                    slotsSnapshot = await getDocs(qSlashPathSlots);
+                }
+
                 const slots = [];
                 if (slotsSnapshot.empty) {
-                    console.log("No matching slots found (checked Ref, Path, and ID) for:", doc.id)
+                    console.log("No matching slots found for:", doc.id)
                 } else {
                     console.log("Slots FOUND. Size:", slotsSnapshot.size);
                     slotsSnapshot.forEach((slotDoc) => {
