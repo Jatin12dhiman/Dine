@@ -1,6 +1,8 @@
 import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { Image, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { auth } from "../config/firebaseConfig";
 
 import { Formik } from 'formik';
 import { TextInput } from 'react-native';
@@ -11,8 +13,14 @@ import validationSchema from "../utils/authSchema";
 
 const Signup = () => {
     const router = useRouter();
-    const handleSignin = () => {
-
+    const handleSignin = async (values) => {
+        try {
+            await signInWithEmailAndPassword(auth, values.email, values.password);
+            router.replace("/(tabs)/home");
+        } catch (error) {
+            console.log("Signin Error:", error.message);
+            alert("Signin Failed: " + error.message);
+        }
     }
     return (
         <SafeAreaView className={`bg-[#2b2b2b]`}>
@@ -69,7 +77,7 @@ const Signup = () => {
                             )}
                         </Formik>
                         <View>
-                            
+
                             <TouchableOpacity
                                 className="flex flex-row justify-center items-center mt-5 p-2 items-center "
                                 onPress={() => router.push("/signup")}
@@ -82,7 +90,7 @@ const Signup = () => {
                             <Text className="text-center text-base  font-semibold mb-4 text-white">
                                 <View className="border-b-2 border-[#f49b33] p-2 mb-1 w-24" /> or{" "}
                                 <View className="border-b-2 border-[#f49b33] p-2 mb-1 w-24" />
-                            </Text> 
+                            </Text>
 
                             <TouchableOpacity
                                 className="flex flex-row justify-center items-center mb-5 p-2 items-center "
